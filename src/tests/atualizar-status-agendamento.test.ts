@@ -25,13 +25,6 @@ describe("Atualizar Agendamento Service", () => {
     };
 
     sut = new AtualizarStatusAgendamentoService(agendamentoRepository);
-  });
-
-  it("Não deve permitir alterar o status de um agendamento para pendente", () => {
-    const input: AtualizarStatusAgendamentoDTO = {
-      id: "1",
-      status: AgendamentoStatus.pendente,
-    };
 
     agendamentoRepository.buscarPorId.mockResolvedValue(
       new Agendamento(
@@ -44,6 +37,13 @@ describe("Atualizar Agendamento Service", () => {
         "1"
       )
     );
+  });
+
+  it("Não deve permitir alterar o status de um agendamento para pendente", () => {
+    const input: AtualizarStatusAgendamentoDTO = {
+      id: "1",
+      status: AgendamentoStatus.pendente,
+    };
 
     expect(sut.execute(input)).rejects.toThrow(
       "Não é possível alterar o agendamento com esse status"
@@ -67,30 +67,32 @@ describe("Atualizar Agendamento Service", () => {
       status: AgendamentoStatus.concluido,
     };
 
-    agendamentoRepository.buscarPorId.mockResolvedValue(
+    const agendamento = await sut.execute(input);
+    expect(agendamento.status).toBe(AgendamentoStatus.concluido);
+    expect(agendamentoRepository.update).toHaveBeenCalled();
+  });
+
+  it("Não deve permitir cancelar um agendamento concluído", async () => {
+    const input: AtualizarStatusAgendamentoDTO = {
+      id: "1",
+      status: AgendamentoStatus.cancelado,
+    };
+    agendamentoRepository.buscarPorId.mockResolvedValueOnce(
       new Agendamento(
         new Date().toISOString(),
         "CT123",
         "João",
         "12345678900",
         "ABC-1234",
-        AgendamentoStatus.pendente,
+        AgendamentoStatus.concluido,
         "1"
       )
     );
 
-    const agendamento = await sut.execute(input);
-    expect(agendamento.status).toBe(AgendamentoStatus.concluido);
-    expect(agendamentoRepository.update).toHaveBeenCalled();
+    expect(sut.execute(input)).rejects.toThrow(
+      "Não é possível alterar o agendamento concluido"
+    );
   });
-
-  // 	it("Não deve permitir cancelar um agendamento concluído", () => {
-  // 		criarAgendamento(agendamento);
-  // 		alterarStatus(agendamento.id, "concluido");
-  // 		expect(() => alterarStatus(agendamento.id, "cancelado")).toThrow(
-  // 			"Não é possível cancelar um agendamento já concluído"
-  // 		);
-  // 	});
   // 	it("Não deve permitir alterar um agendamento cancelado", () => {
   // 		criarAgendamento(agendamento);
   // 		alterarStatus(agendamento.id, "cancelado");
