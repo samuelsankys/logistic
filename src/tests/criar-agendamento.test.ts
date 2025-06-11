@@ -17,6 +17,7 @@ describe("Criar Agendamento Service", () => {
       getDataHora: jest.fn(),
       getAtrasadosOuPendentesPorMotorista: jest.fn(),
       buscarPorId: jest.fn(),
+      update: jest.fn(),
     };
     sut = new CriarAgendamentoService(agendamentoRepository);
   });

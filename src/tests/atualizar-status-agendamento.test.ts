@@ -21,6 +21,7 @@ describe("Atualizar Agendamento Service", () => {
       getDataHora: jest.fn(),
       getAtrasadosOuPendentesPorMotorista: jest.fn(),
       buscarPorId: jest.fn(),
+      update: jest.fn(),
     };
 
     sut = new AtualizarStatusAgendamentoService(agendamentoRepository);
@@ -31,6 +32,19 @@ describe("Atualizar Agendamento Service", () => {
       id: "1",
       status: AgendamentoStatus.pendente,
     };
+
+    agendamentoRepository.buscarPorId.mockResolvedValue(
+      new Agendamento(
+        new Date().toISOString(),
+        "CT123",
+        "João",
+        "12345678900",
+        "ABC-1234",
+        AgendamentoStatus.pendente,
+        "1"
+      )
+    );
+
     expect(sut.execute(input)).rejects.toThrow(
       "Não é possível alterar o agendamento com esse status"
     );
@@ -45,6 +59,29 @@ describe("Atualizar Agendamento Service", () => {
     agendamentoRepository.buscarPorId.mockResolvedValueOnce(null);
 
     expect(sut.execute(input)).rejects.toThrow("Agendamento nao encontrado");
+  });
+
+  it("Deve permitir alterar o status de um agendamento", async () => {
+    const input: AtualizarStatusAgendamentoDTO = {
+      id: "1",
+      status: AgendamentoStatus.concluido,
+    };
+
+    agendamentoRepository.buscarPorId.mockResolvedValue(
+      new Agendamento(
+        new Date().toISOString(),
+        "CT123",
+        "João",
+        "12345678900",
+        "ABC-1234",
+        AgendamentoStatus.pendente,
+        "1"
+      )
+    );
+
+    const agendamento = await sut.execute(input);
+    expect(agendamento.status).toBe(AgendamentoStatus.concluido);
+    expect(agendamentoRepository.update).toHaveBeenCalled();
   });
 
   // 	it("Não deve permitir cancelar um agendamento concluído", () => {
