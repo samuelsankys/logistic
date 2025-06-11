@@ -93,13 +93,28 @@ describe("Atualizar Agendamento Service", () => {
       "Não é possível alterar o agendamento concluido"
     );
   });
-  // 	it("Não deve permitir alterar um agendamento cancelado", () => {
-  // 		criarAgendamento(agendamento);
-  // 		alterarStatus(agendamento.id, "cancelado");
-  // 		expect(() => alterarStatus(agendamento.id, "concluido")).toThrow(
-  // 			"Não é possível alterar um agendamento cancelado"
-  // 		);
-  // 	});
+
+  it("Não deve permitir alterar um agendamento cancelado", () => {
+    const input: AtualizarStatusAgendamentoDTO = {
+      id: "1",
+      status: AgendamentoStatus.atrasado,
+    };
+    agendamentoRepository.buscarPorId.mockResolvedValueOnce(
+      new Agendamento(
+        new Date().toISOString(),
+        "CT123",
+        "João",
+        "12345678900",
+        "ABC-1234",
+        AgendamentoStatus.cancelado,
+        "1"
+      )
+    );
+
+    expect(sut.execute(input)).rejects.toThrow(
+      "Não é possível alterar o agendamento cancelado"
+    );
+  });
 
   // it("Não deve permitir agendamento se o motorista tem um agendamento pendente ou atrasado", async () => {
   //   const hoje = new Date();
