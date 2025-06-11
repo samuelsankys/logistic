@@ -14,6 +14,7 @@ export class AtualizarStatusAgendamentoService {
     if (!agendamento) {
       throw new Error("Agendamento nao encontrado");
     }
+    console.log({ agendamento });
 
     agendamento.setStatus(input.status);
 

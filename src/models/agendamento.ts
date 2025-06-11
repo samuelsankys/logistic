@@ -62,6 +62,12 @@ export class Agendamento {
 
   setStatus(newStatus: AgendamentoStatus) {
     if (
+      this.status === AgendamentoStatus.concluido &&
+      newStatus === AgendamentoStatus.cancelado
+    ) {
+      throw new Error("Não é possível alterar o agendamento concluido");
+    }
+    if (
       newStatus !== AgendamentoStatus.concluido &&
       newStatus !== AgendamentoStatus.cancelado
     ) {
