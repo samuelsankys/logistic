@@ -13,6 +13,13 @@ export interface CriarAgendamentoDTO {
 export class CriarAgendamentoService {
   constructor(private readonly agendamentoRepository: IAgendamentoRepository) {}
   async execute(input: CriarAgendamentoDTO) {
+    const existeAgendamentosPendentes =
+      await this.agendamentoRepository.getAtrasadosOuPendentesPorMotorista(
+        input.motoristaCpf
+      );
+    if (existeAgendamentosPendentes?.length > 0)
+      throw Error("Foi encontrado agendamentos pendentes/atrasados");
+
     const existeAgendamentoMesMaHora =
       await this.agendamentoRepository.getDataHora(input.dataHora);
     if (existeAgendamentoMesMaHora) {
