@@ -7,4 +7,5 @@ export interface IAgendamentoRepository {
     motoristaCpf: string
   ): Promise<Agendamento[]>;
   buscarPorId(id: string): Promise<Agendamento | null>;
+  update(agendamento: Agendamento): Promise<void>;
 }
