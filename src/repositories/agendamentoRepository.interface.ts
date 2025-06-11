@@ -2,8 +2,9 @@ import { Agendamento } from "../models/agendamento";
 
 export interface IAgendamentoRepository {
   criar(agendamento: Agendamento): Promise<Agendamento>;
-  getDataHora(id: string): Promise<Agendamento | null>;
+  getDataHora(dataHora: string): Promise<Agendamento[]>;
   getAtrasadosOuPendentesPorMotorista(
     motoristaCpf: string
   ): Promise<Agendamento[]>;
+  buscarPorId(id: string): Promise<Agendamento | null>;
 }

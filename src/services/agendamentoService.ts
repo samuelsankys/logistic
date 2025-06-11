@@ -1,48 +1,40 @@
-import { Agendamento } from '../models/agendamento';
+import { Agendamento } from "../models/agendamento";
 import { isSameDay } from "date-fns";
 
 var agendamentos: Agendamento[] = [];
 
-export const criarAgendamento = (novoAgendamento: Agendamento): Agendamento => {
-	// TODO
-};''
+// export const listarAgendamentos = (d, s, m): Agendamento[] => {
+// 	return agendamentos.filter((a) => {
+// 		var corresponde = true;
 
-export const alterarStatus = (id, novoStatus: Status): Agendamento => {
-	// TODO
-};
+// 		if (d) {
+// 			corresponde = corresponde && isSameDay(a.dataHora, d);
+// 		} else if (s) {
+// 			corresponde = corresponde && a.status === s;
+// 		} else if (m) {
+// 			corresponde = corresponde && a.motoristaCpf === m;
+// 		}
 
-export const listarAgendamentos = (d, s, m): Agendamento[] => {
-	return agendamentos.filter((a) => {
-		var corresponde = true;
+// 		return corresponde;
+// 	});
+// };
 
-		if (d) {
-			corresponde = corresponde && isSameDay(a.dataHora, d);
-		} else if (s) {
-			corresponde = corresponde && a.status === s;
-		} else if (m) {
-			corresponde = corresponde && a.motoristaCpf === m;
-		}
+// export const removerAgendamentosAntigos = (): void => {
+// 	var temp: Agendamento[] = [];
 
-		return corresponde;
-	});
-};
+// 	agendamentos.map((a) => {
+// 		const diasDeDiferenca = differenceInDays(new Date(), a.dataHora);
 
-export const removerAgendamentosAntigos = (): void => {
-	var temp: Agendamento[] = [];
+// 		if (diasDeDiferenca <= 3) {
+// 			for (let i = 0; i < agendamentos.length; i++) {
+// 				const e = agendamentos[i];
 
-	agendamentos.map((a) => {
-		const diasDeDiferenca = differenceInDays(new Date(), a.dataHora);
+// 				if (e.id === a.id) {
+// 					temp[i] = e;
+// 				}
+// 			}
+// 		}
+// 	});
 
-		if (diasDeDiferenca <= 3) {
-			for (let i = 0; i < agendamentos.length; i++) {
-				const e = agendamentos[i];
-
-				if (e.id === a.id) {
-					temp[i] = e;
-				}
-			}
-		}
-	});
-
-	agendamentos = temp;	
-};
+// 	agendamentos = temp;
+// };

@@ -1,6 +1,8 @@
 export enum AgendamentoStatus {
   pendente = "pendente",
   concluido = "concluido",
+  atrasado = "atrasado",
+  cancelado = "cancelado",
 }
 
 export class Agendamento {

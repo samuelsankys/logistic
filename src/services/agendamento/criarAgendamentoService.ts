@@ -13,17 +13,19 @@ export interface CriarAgendamentoDTO {
 export class CriarAgendamentoService {
   constructor(private readonly agendamentoRepository: IAgendamentoRepository) {}
   async execute(input: CriarAgendamentoDTO) {
-    const existeAgendamentosPendentes =
-      await this.agendamentoRepository.getAtrasadosOuPendentesPorMotorista(
-        input.motoristaCpf
-      );
-    if (existeAgendamentosPendentes?.length > 0)
-      throw Error("Foi encontrado agendamentos pendentes/atrasados");
+    const [existeAgendamentosPendentes, existeAgendamentoMesMaHora] =
+      await Promise.all([
+        this.agendamentoRepository.getAtrasadosOuPendentesPorMotorista(
+          input.motoristaCpf
+        ),
+        this.agendamentoRepository.getDataHora(input.dataHora),
+      ]);
 
-    const existeAgendamentoMesMaHora =
-      await this.agendamentoRepository.getDataHora(input.dataHora);
-    if (existeAgendamentoMesMaHora) {
-      throw new Error("Já existe agendamento para essa data e hora");
+    if (existeAgendamentosPendentes?.length > 0) {
+      throw Error("Foi encontrado agendamentos pendentes/atrasados");
+    }
+    if (existeAgendamentoMesMaHora?.length > 0) {
+      throw new Error("Conflito de agendamento");
     }
 
     const novoAgendamento = await this.agendamentoRepository.criar(
