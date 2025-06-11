@@ -22,6 +22,7 @@ describe("Atualizar Agendamento Service", () => {
       getAtrasadosOuPendentesPorMotorista: jest.fn(),
       buscarPorId: jest.fn(),
     };
+
     sut = new AtualizarStatusAgendamentoService(agendamentoRepository);
   });
 
@@ -35,13 +36,17 @@ describe("Atualizar Agendamento Service", () => {
     );
   });
 
-  // it("Deve alterar o status de um agendamento", () => {
-  //   const input: AtualizarStatusAgendamentoDTO = {
-  //     id: "1",
-  //     status: AgendamentoStatus.concluido,
-  //   };
-  //   sut.execute(input);
-  // });
+  it("Não permite continuar por não encontrar o agendamento", async () => {
+    const input: AtualizarStatusAgendamentoDTO = {
+      id: "1",
+      status: AgendamentoStatus.concluido,
+    };
+
+    agendamentoRepository.buscarPorId.mockResolvedValueOnce(null);
+
+    expect(sut.execute(input)).rejects.toThrow("Agendamento nao encontrado");
+  });
+
   // 	it("Não deve permitir cancelar um agendamento concluído", () => {
   // 		criarAgendamento(agendamento);
   // 		alterarStatus(agendamento.id, "concluido");
