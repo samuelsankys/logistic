@@ -16,6 +16,7 @@ describe("Criar Agendamento Service", () => {
       criar: jest.fn(),
       getDataHora: jest.fn(),
       getAtrasadosOuPendentesPorMotorista: jest.fn(),
+      buscarPorId: jest.fn(),
     };
     sut = new CriarAgendamentoService(agendamentoRepository);
   });
@@ -55,7 +56,7 @@ describe("Criar Agendamento Service", () => {
     expect(novoAgendamento.status).toBe(AgendamentoStatus.pendente);
   });
 
-  it.only("Não deve permitir agendamento se o motorista tem um agendamento pendente ou atrasado", async () => {
+  it("Não deve permitir agendamento se o motorista tem um agendamento pendente ou atrasado", async () => {
     const hoje = new Date();
     const inputAgendamento: CriarAgendamentoDTO = {
       motoristaNome: "João",
@@ -84,37 +85,30 @@ describe("Criar Agendamento Service", () => {
     );
   });
 
-  // it("Não deve permitir agendamento de dois motoristas no mesmo horário", () => {
-  //   criarAgendamento(agendamento);
-  //   const outroAgendamento = {
-  //     ...agendamento,
-  //     id: "2",
-  //     motoristaCpf: "98765432100",
-  //   };
-  //   expect(() => criarAgendamento(outroAgendamento)).toThrow(
-  //     "Conflito de agendamento"
-  //   );
-  // });
+  it("Não deve permitir agendamento de dois motoristas no mesmo horário", () => {
+    const hoje = new Date();
+    const inputAgendamento: CriarAgendamentoDTO = {
+      motoristaNome: "Pedro",
+      motoristaCpf: "43221545232",
+      placaCaminhao: "any_placa",
+      numeroContrato: "any_contract_number",
+      dataHora: hoje.toISOString(),
+    };
 
-  //   it("Deve alterar o status de um agendamento", () => {
-  //     criarAgendamento(agendamento);
-  //     const atualizado = alterarStatus(agendamento.id, "concluido");
-  //     expect(atualizado.status).toBe("concluido");
-  //   });
+    agendamentoRepository.getDataHora.mockResolvedValueOnce([
+      new Agendamento(
+        hoje.toISOString(),
+        "CT123",
+        "João",
+        "12345678900",
+        "ABC-1234",
+        AgendamentoStatus.pendente,
+        "1"
+      ),
+    ]);
 
-  //   it("Não deve permitir cancelar um agendamento concluído", () => {
-  //     criarAgendamento(agendamento);
-  //     alterarStatus(agendamento.id, "concluido");
-  //     expect(() => alterarStatus(agendamento.id, "cancelado")).toThrow(
-  //       "Não é possível cancelar um agendamento já concluído"
-  //     );
-  //   });
-
-  //   it("Não deve permitir alterar um agendamento cancelado", () => {
-  //     criarAgendamento(agendamento);
-  //     alterarStatus(agendamento.id, "cancelado");
-  //     expect(() => alterarStatus(agendamento.id, "concluido")).toThrow(
-  //       "Não é possível alterar um agendamento cancelado"
-  //     );
-  //   });
+    expect(sut.execute(inputAgendamento)).rejects.toThrow(
+      "Conflito de agendamento"
+    );
+  });
 });
