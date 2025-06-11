@@ -15,11 +15,12 @@ describe("Criar Agendamento Service", () => {
     agendamentoRepository = {
       criar: jest.fn(),
       getDataHora: jest.fn(),
+      getAtrasadosOuPendentesPorMotorista: jest.fn(),
     };
     sut = new CriarAgendamentoService(agendamentoRepository);
   });
 
-  it.only("Deve criar um novo agendamento", async () => {
+  it("Deve criar um novo agendamento", async () => {
     const hoje = new Date();
     const inputAgendamento: CriarAgendamentoDTO = {
       motoristaNome: "João",
@@ -54,13 +55,34 @@ describe("Criar Agendamento Service", () => {
     expect(novoAgendamento.status).toBe(AgendamentoStatus.pendente);
   });
 
-  // it("Não deve permitir agendamento se o motorista tem um agendamento pendente ou atrasado", () => {
-  //   criarAgendamento(inputAgendamento);
-  //   const novoAgendamento = { ...inputAgendamento, id: "2" };
-  //   expect(() => criarAgendamento(novoAgendamento)).toThrow(
-  //     "Conflito de agendamento"
-  //   );
-  // });
+  it.only("Não deve permitir agendamento se o motorista tem um agendamento pendente ou atrasado", async () => {
+    const hoje = new Date();
+    const inputAgendamento: CriarAgendamentoDTO = {
+      motoristaNome: "João",
+      motoristaCpf: "12345678900",
+      placaCaminhao: "ABC-1234",
+      numeroContrato: "CT123",
+      dataHora: hoje.toISOString(),
+    };
+
+    agendamentoRepository.getAtrasadosOuPendentesPorMotorista.mockResolvedValueOnce(
+      [
+        new Agendamento(
+          hoje.toISOString(),
+          "CT123",
+          "João",
+          "12345678900",
+          "ABC-1234",
+          AgendamentoStatus.pendente,
+          "1"
+        ),
+      ]
+    );
+
+    expect(sut.execute(inputAgendamento)).rejects.toThrow(
+      "Foi encontrado agendamentos pendentes/atrasados"
+    );
+  });
 
   // it("Não deve permitir agendamento de dois motoristas no mesmo horário", () => {
   //   criarAgendamento(agendamento);
