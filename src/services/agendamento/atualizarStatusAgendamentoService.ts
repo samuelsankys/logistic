@@ -16,5 +16,10 @@ export class AtualizarStatusAgendamentoService {
     ) {
       throw new Error("Não é possível alterar o agendamento com esse status");
     }
+
+    const agendamento = await this.agendamentoRepository.buscarPorId(input.id);
+    if (!agendamento) {
+      throw new Error("Agendamento nao encontrado");
+    }
   }
 }
