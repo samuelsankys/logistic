@@ -1,4 +1,3 @@
-import { isSameDay } from "date-fns";
 import { Agendamento, AgendamentoStatus } from "../../models/agendamento";
 import { IAgendamentoRepository } from "../../repositories/agendamentoRepository.interface";
 
@@ -12,7 +11,15 @@ export interface CriarAgendamentoDTO {
 
 export class CriarAgendamentoService {
   constructor(private readonly agendamentoRepository: IAgendamentoRepository) {}
+
   async execute(input: CriarAgendamentoDTO) {
+    const agora = new Date();
+    const agendamento = new Date(input.dataHora);
+
+    if (agendamento.getTime() < agora.getTime()) {
+      throw new Error("Permitido somente para horários futuros");
+    }
+
     const [existeAgendamentosPendentes, existeAgendamentoMesMaHora] =
       await Promise.all([
         this.agendamentoRepository.getAtrasadosOuPendentesPorMotorista(
