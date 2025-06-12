@@ -112,4 +112,21 @@ describe("Criar Agendamento Service", () => {
       "Conflito de agendamento"
     );
   });
+
+  it("Não deve permitir agendamento anterior ao horário atual", () => {
+    const hoje = new Date();
+    hoje.setMinutes(hoje.getMinutes() - 5);
+
+    const inputAgendamento: CriarAgendamentoDTO = {
+      motoristaNome: "Pedro",
+      motoristaCpf: "43221545232",
+      placaCaminhao: "any_placa",
+      numeroContrato: "any_contract_number",
+      dataHora: hoje.toISOString(),
+    };
+
+    expect(sut.execute(inputAgendamento)).rejects.toThrow(
+      "Permitido somente para horários futuros"
+    );
+  });
 });
