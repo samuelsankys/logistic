@@ -8,4 +8,5 @@ export interface IAgendamentoRepository {
   ): Promise<Agendamento[]>;
   buscarPorId(id: string): Promise<Agendamento | null>;
   update(agendamento: Agendamento): Promise<void>;
+  busqueComFiltro(): Promise<Agendamento[]>;
 }
