@@ -18,6 +18,8 @@ describe("Criar Agendamento Service", () => {
       getAtrasadosOuPendentesPorMotorista: jest.fn(),
       buscarPorId: jest.fn(),
       update: jest.fn(),
+      busqueComFiltro: jest.fn(),
+      removerPorId: jest.fn(),
     };
     sut = new CriarAgendamentoService(agendamentoRepository);
   });

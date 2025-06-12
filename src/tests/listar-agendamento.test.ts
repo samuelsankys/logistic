@@ -19,6 +19,7 @@ describe("Listar Agendamento Service - Filtros", () => {
       buscarPorId: jest.fn(),
       update: jest.fn(),
       busqueComFiltro: jest.fn(),
+      removerPorId: jest.fn(),
     };
 
     agendamentoRepository.busqueComFiltro.mockResolvedValue([

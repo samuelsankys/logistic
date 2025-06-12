@@ -22,6 +22,8 @@ describe("Atualizar Agendamento Service", () => {
       getAtrasadosOuPendentesPorMotorista: jest.fn(),
       buscarPorId: jest.fn(),
       update: jest.fn(),
+      busqueComFiltro: jest.fn(),
+      removerPorId: jest.fn(),
     };
 
     sut = new AtualizarStatusAgendamentoService(agendamentoRepository);
@@ -57,7 +59,6 @@ describe("Atualizar Agendamento Service", () => {
     };
 
     agendamentoRepository.buscarPorId.mockResolvedValueOnce(null);
-
     expect(sut.execute(input)).rejects.toThrow("Agendamento nao encontrado");
   });
 
