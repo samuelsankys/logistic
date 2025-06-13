@@ -41,7 +41,7 @@ describe("Atualizar Agendamento Service", () => {
     );
   });
 
-  it("Não deve permitir alterar o status de um agendamento para pendente", () => {
+  it("Não deve permitir alterar o status de um agendamento para pendente", async () => {
     const input: AtualizarStatusAgendamentoDTO = {
       id: "1",
       status: AgendamentoStatus.pendente,
@@ -95,7 +95,7 @@ describe("Atualizar Agendamento Service", () => {
     );
   });
 
-  it("Não deve permitir alterar um agendamento cancelado", () => {
+  it("Não deve permitir alterar um agendamento cancelado", async () => {
     const input: AtualizarStatusAgendamentoDTO = {
       id: "1",
       status: AgendamentoStatus.atrasado,
@@ -112,7 +112,7 @@ describe("Atualizar Agendamento Service", () => {
       )
     );
 
-    expect(sut.execute(input)).rejects.toThrow(
+    await expect(sut.execute(input)).rejects.toThrow(
       "Não é possível alterar o agendamento cancelado"
     );
   });

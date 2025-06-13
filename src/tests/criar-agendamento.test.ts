@@ -1,5 +1,4 @@
 import { Agendamento, AgendamentoStatus } from "../models/agendamento";
-import { addDays } from "date-fns";
 import {
   CriarAgendamentoDTO,
   CriarAgendamentoService,
@@ -12,6 +11,7 @@ describe("Criar Agendamento Service", () => {
   let agendamentoRepository: jest.Mocked<IAgendamentoRepository>;
 
   beforeEach(() => {
+    jest.resetAllMocks();
     agendamentoRepository = {
       criar: jest.fn(),
       getDataHora: jest.fn(),
@@ -47,16 +47,16 @@ describe("Criar Agendamento Service", () => {
     );
 
     const novoAgendamento = await sut.execute(inputAgendamento);
-    expect(novoAgendamento.dataHora).toEqual(
-      new Date(inputAgendamento.dataHora)
+    expect(novoAgendamento?.dataHora).toEqual(
+      new Date(inputAgendamento.dataHora).toISOString()
     );
-    expect(novoAgendamento.numeroContrato).toBe(
+    expect(novoAgendamento?.numeroContrato).toBe(
       inputAgendamento.numeroContrato
     );
-    expect(novoAgendamento.motoristaNome).toBe(inputAgendamento.motoristaNome);
-    expect(novoAgendamento.motoristaCpf).toBe(inputAgendamento.motoristaCpf);
-    expect(novoAgendamento.placaCaminhao).toBe(inputAgendamento.placaCaminhao);
-    expect(novoAgendamento.status).toBe(AgendamentoStatus.pendente);
+    expect(novoAgendamento?.motoristaNome).toBe(inputAgendamento.motoristaNome);
+    expect(novoAgendamento?.motoristaCpf).toBe(inputAgendamento.motoristaCpf);
+    expect(novoAgendamento?.placaCaminhao).toBe(inputAgendamento.placaCaminhao);
+    expect(novoAgendamento?.status).toBe(AgendamentoStatus.pendente);
   });
 
   it("Não deve permitir agendamento se o motorista tem um agendamento pendente ou atrasado", async () => {
@@ -88,7 +88,7 @@ describe("Criar Agendamento Service", () => {
     );
   });
 
-  it("Não deve permitir agendamento de dois motoristas no mesmo horário", () => {
+  it("Não deve permitir agendamento de dois motoristas no mesmo horário", async () => {
     const hoje = new Date();
     const inputAgendamento: CriarAgendamentoDTO = {
       motoristaNome: "Pedro",
@@ -115,9 +115,11 @@ describe("Criar Agendamento Service", () => {
     );
   });
 
-  it("Não deve permitir agendamento anterior ao horário atual", () => {
+  it("Não deve permitir agendamento anterior ao horário atual", async () => {
     const hoje = new Date();
     hoje.setMinutes(hoje.getMinutes() - 5);
+
+    agendamentoRepository.criar.mockResolvedValue(null);
 
     const inputAgendamento: CriarAgendamentoDTO = {
       motoristaNome: "Pedro",
