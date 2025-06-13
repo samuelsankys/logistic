@@ -14,5 +14,7 @@ export class RemoverAgendamentoService {
         await this.agendamentoRepository.removerPorId(agendamento.id!);
       }
     }
+
+    return true;
   }
 }

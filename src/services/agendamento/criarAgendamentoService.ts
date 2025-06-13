@@ -21,7 +21,6 @@ export class CriarAgendamentoService {
     const agora = new Date();
     const umMinutosAntes = new Date(agora.getTime() - 5 * 60 * 1000);
 
-    console.log(agendamento.getTime(), umMinutosAntes.getTime());
     if (agendamento.getTime() < umMinutosAntes.getTime()) {
       throw new Error("Permitido somente para horários futuros");
     }

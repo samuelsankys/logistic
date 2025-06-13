@@ -1,3 +1,4 @@
+import { AgendamentoMapper } from "../../mapper/agendamentoMapper";
 import { AgendamentoStatus } from "../../models/agendamento";
 import { IAgendamentoRepository } from "../../repositories/agendamentoRepository.interface";
 
@@ -16,6 +17,6 @@ export class AtualizarStatusAgendamentoService {
     agendamento.setStatus(input.status);
 
     await this.agendamentoRepository.update(agendamento);
-    return agendamento;
+    return AgendamentoMapper.toDTO(agendamento);
   }
 }
