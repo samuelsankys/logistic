@@ -48,8 +48,8 @@ export class Agendamento {
     return this._numeroContrato;
   }
 
-  get dataHora(): Date {
-    return new Date(this._dataHora);
+  get dataHora(): string {
+    return this._dataHora;
   }
 
   get placaCaminhao(): string {

@@ -1,3 +1,7 @@
+import {
+  AgendamentoDTO,
+  AgendamentoMapper,
+} from "../../mapper/agendamentoMapper";
 import { Agendamento, AgendamentoStatus } from "../../models/agendamento";
 import { IAgendamentoRepository } from "../../repositories/agendamentoRepository.interface";
 
@@ -12,7 +16,7 @@ export interface CriarAgendamentoDTO {
 export class CriarAgendamentoService {
   constructor(private readonly agendamentoRepository: IAgendamentoRepository) {}
 
-  async execute(input: CriarAgendamentoDTO) {
+  async execute(input: CriarAgendamentoDTO): Promise<AgendamentoDTO | null> {
     const agora = new Date();
     const agendamento = new Date(input.dataHora);
 
@@ -46,6 +50,6 @@ export class CriarAgendamentoService {
       )
     );
 
-    return novoAgendamento;
+    return novoAgendamento ? AgendamentoMapper.toDTO(novoAgendamento) : null;
   }
 }
