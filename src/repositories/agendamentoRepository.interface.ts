@@ -1,4 +1,14 @@
-import { Agendamento } from "../models/agendamento";
+import { Agendamento, AgendamentoStatus } from "../models/agendamento";
+
+export interface FiltroListarAgendamento {
+  motoristaCpf?: string;
+  data?: string;
+  status?: string;
+}
+export interface PaginacaoListarAgendamento {
+  page?: number;
+  limit?: number;
+}
 
 export interface IAgendamentoRepository {
   criar(agendamento: Agendamento): Promise<Agendamento | null>;
@@ -8,6 +18,9 @@ export interface IAgendamentoRepository {
   ): Promise<Agendamento[]>;
   buscarPorId(id: string): Promise<Agendamento | null>;
   update(agendamento: Agendamento): Promise<void>;
-  busqueComFiltro(): Promise<Agendamento[]>;
+  busqueComFiltro(
+    filtro?: FiltroListarAgendamento,
+    paginacao?: PaginacaoListarAgendamento
+  ): Promise<Agendamento[]>;
   removerPorId(id: string): Promise<void>;
 }

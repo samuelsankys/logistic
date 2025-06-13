@@ -2,9 +2,13 @@ import { AgendamentoDTO } from "../mapper/agendamentoMapper";
 import { Agendamento, AgendamentoStatus } from "../models/agendamento";
 import { DBClient } from "../shared/database/db";
 import { agendamentos } from "../shared/database/schema";
-import { IAgendamentoRepository } from "./agendamentoRepository.interface";
+import {
+  FiltroListarAgendamento,
+  IAgendamentoRepository,
+  PaginacaoListarAgendamento,
+} from "./agendamentoRepository.interface";
 
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, gte, lt, or } from "drizzle-orm";
 
 export class DrizzleAgendamentoRepository implements IAgendamentoRepository {
   constructor(private readonly db: DBClient) {}
@@ -41,7 +45,7 @@ export class DrizzleAgendamentoRepository implements IAgendamentoRepository {
       agendamento.status,
       String(resposta?.lastInsertRowid.toString())
     );
-    return this.mapToDomain(newAgendamento);
+    return newAgendamento;
   }
   async getDataHora(dataHora: string): Promise<Agendamento[]> {
     const resultado = await this.db
@@ -84,10 +88,43 @@ export class DrizzleAgendamentoRepository implements IAgendamentoRepository {
       .where(eq(agendamentos.id, +agendamento.id!))
       .run();
   }
-  async busqueComFiltro(): Promise<Agendamento[]> {
-    const results = await this.db.select().from(agendamentos).all();
+
+  async busqueComFiltro(
+    filtro?: FiltroListarAgendamento,
+    paginacao?: PaginacaoListarAgendamento
+  ): Promise<Agendamento[]> {
+    const limit = paginacao?.limit || 10;
+    const offset = paginacao?.page ? (paginacao?.page - 1) * limit : 0;
+    const { data, status, motoristaCpf } = filtro || {};
+
+    const conditions = [];
+    if (data) {
+      const start = new Date(`${data}T00:00:00.000Z`);
+      const end = new Date(start);
+      end.setUTCDate(end.getUTCDate() + 1);
+
+      conditions.push(
+        and(
+          gte(agendamentos.dataHora, start.toISOString()),
+          lt(agendamentos.dataHora, end.toISOString())
+        )
+      );
+    }
+    if (status) conditions.push(eq(agendamentos.status, status));
+    if (motoristaCpf)
+      conditions.push(eq(agendamentos.motoristaCpf, motoristaCpf));
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const results = await this.db
+      .select()
+      .from(agendamentos)
+      .where(whereClause)
+      .limit(limit)
+      .offset(offset);
+
     return results.map(this.mapToDomain as any);
   }
+
   async removerPorId(id: string): Promise<void> {
     await this.db.delete(agendamentos).where(eq(agendamentos.id, +id)).run();
   }

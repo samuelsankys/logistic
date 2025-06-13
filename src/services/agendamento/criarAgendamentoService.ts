@@ -17,10 +17,12 @@ export class CriarAgendamentoService {
   constructor(private readonly agendamentoRepository: IAgendamentoRepository) {}
 
   async execute(input: CriarAgendamentoDTO): Promise<AgendamentoDTO | null> {
-    const agora = new Date();
     const agendamento = new Date(input.dataHora);
+    const agora = new Date();
+    const umMinutosAntes = new Date(agora.getTime() - 5 * 60 * 1000);
 
-    if (agendamento.getTime() < agora.getTime()) {
+    console.log(agendamento.getTime(), umMinutosAntes.getTime());
+    if (agendamento.getTime() < umMinutosAntes.getTime()) {
       throw new Error("Permitido somente para horários futuros");
     }
 
@@ -33,7 +35,7 @@ export class CriarAgendamentoService {
       ]);
 
     if (existeAgendamentosPendentes?.length > 0) {
-      throw Error("Foi encontrado agendamentos pendentes/atrasados");
+      throw new Error("Foi encontrado agendamentos pendentes/atrasados");
     }
     if (existeAgendamentoMesMaHora?.length > 0) {
       throw new Error("Conflito de agendamento");
