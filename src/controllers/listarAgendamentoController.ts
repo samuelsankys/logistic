@@ -41,7 +41,7 @@ export class ListarAgendamentoController {
     try {
       const agendamento = await this.listarAgendamentoService.execute(input);
 
-      res.status(200).json(agendamento);
+      return res.status(200).json(agendamento);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
